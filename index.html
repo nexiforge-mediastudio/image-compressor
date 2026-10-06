@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexiForge 3D | Free Online Image Compressor & Converter</title>
+    
+    <meta name="description" content="Reduce image size online for free with NexiForge 3D. Fast, browser-based image compressor, resizer, and WEBP/JPG/PNG converter with 100% privacy.">
+    <meta name="keywords" content="image compressor, reduce photo size, free image resizer, webp converter, fast photo compressor, nexiforge media studio">
+    <meta name="author" content="NexiForge Media Studio">
+    <meta name="robots" content="index, follow">
+
+    <style>
+        :root {
+            --primary-glow: #6366f1;
+            --secondary-glow: #a855f7;
+            --cyan-glow: #06b6d4;
+            --bg-dark: #030712;
+            --glass-bg: rgba(17, 24, 39, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --slider-color: #10b981;
+            --fill-percent: 77.77%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-x: hidden;
+            color: #f8fafc;
+        }
+
+        .background-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 60%);
+            filter: blur(40px);
+            animation: pulse3d 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse3d {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(3deg); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.6);
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(180deg, #ffffff 30%, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #38bdf8;
+            margin-top: 8px;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .container-3d {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px 18px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.5);
+            border-radius: 18px;
+            padding: 20px 15px;
+            background: rgba(3, 7, 18, 0.4);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+        }
+
+        .upload-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #818cf8;
+        }
+
+        .drop-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .drop-subtitle {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .preview-wrapper {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 12px;
+            object-fit: contain;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .change-photo-txt {
+            font-size: 11px;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .controls {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .quality-status-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: white;
+            background: var(--slider-color);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 6px;
+            outline: none;
+            margin-bottom: 15px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, var(--slider-color) 0%, var(--slider-color) var(--fill-percent), rgba(255, 255, 255, 0.1) var(--fill-percent), rgba(255, 255, 255, 0.1) 100%);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid var(--slider-color);
+            cursor: pointer;
+            box-shadow: 0 0 12px var(--slider-color);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-field, .select-field {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            outline: none;
+            width: 100%;
+        }
+
+        .btn-action {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(6, 182, 212, 0.08);
+            border: 1px solid var(--cyan-glow);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stats-text {
+            font-size: 13px;
+            color: #38bdf8;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .btn-download {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        @media (min-width: 480px) {
+            h1 { font-size: 34px; }
+            .container-3d { padding: 28px 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-3d"></div>
+
+    <header>
+        <span class="brand-badge">NexiForge Media Studio</span>
+        <h1>Ultra Fast Image Studio</h1>
+        <div class="subtitle-badge">
+            <span>*</span> Compress • Resize • Convert
+        </div>
+    </header>
+
+    <div class="container-3d">
+        <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+            <div id="uploadUi" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div class="upload-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="drop-title">Select or Drag Image Here</div>
+                <div class="drop-subtitle">Supports JPG, PNG, WEBP</div>
+            </div>
+
+            <div class="preview-wrapper" id="previewWrapper">
+                <img id="imagePreview" class="preview-img" alt="Uploaded Image Preview">
+                <div class="change-photo-txt">Click to change photo</div>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" onchange="handleImageSelect(event)">
+        </div>
+
+        <div class="controls" id="controlsSection">
+            <div class="label-container">
+                <label id="qualityLabel">Quality Level: 80%</label>
+                <span class="quality-status-badge" id="statusBadge">High Quality</span>
+            </div>
+            
+            <input type="range" id="qualityRange" min="10" max="100" value="80" oninput="updateQualityUI(this.value)">
+
+            <div class="options-grid">
+                <div class="option-group">
+                    <label>Width (px):</label>
+                    <input type="number" id="imgWidth" class="input-field" placeholder="Auto Width">
+                </div>
+                <div class="option-group">
+                    <label>Output Format:</label>
+                    <select id="formatSelect" class="select-field">
+                        <option value="image/jpeg">JPG / JPEG</option>
+                        <option value="image/png">PNG</option>
+                        <option value="image/webp">WEBP</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="processImage()">Process Image Now</button>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div class="stats-text" id="statsText">Done! Image processed successfully.</div>
+            <a href="#" id="downloadBtn" class="btn-download" download="nexiforge-processed.jpg">Download Image</a>
+        </div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let originalSize = 0;
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                originalSize = file.size;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalImage = new Image();
+                    originalImage.src = e.target.result;
+                    originalImage.onload = function() {
+                        document.getElementById('uploadUi').style.display = 'none';
+                        const previewWrapper = document.getElementById('previewWrapper');
+                        const imagePreview = document.getElementById('imagePreview');
+                        
+                        imagePreview.src = e.target.result;
+                        previewWrapper.style.display = 'flex';
+
+                        document.getElementById('imgWidth').value = originalImage.width;
+                        document.getElementById('controlsSection').style.display = 'block';
+                        updateQualityUI(document.getElementById('qualityRange').value);
+                        
+                        document.getElementById('resultBox').style.display = 'none';
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateQualityUI(val) {
+            document.getElementById('qualityLabel').innerText = `Quality Level: ${val}%`;
+            
+            const root = document.documentElement;
+            const badge = document.getElementById('statusBadge');
+
+            const percent = ((val - 10) / (100 - 10)) * 100;
+            root.style.setProperty('--fill-percent', `${percent}%`);
+
+            if (val >= 80) {
+                root.style.setProperty('--slider-color', '#10b981');
+                badge.innerText = "High Quality";
+            } else if (val >= 50) {
+                root.style.setProperty('--slider-color', '#f59e0b');
+                badge.innerText = "Balanced";
+            } else {
+                root.style.setProperty('--slider-color', '#ef4444');
+                badge.innerText = "Maximum Compression";
+            }
+        }
+
+        function processImage() {
+            if (!originalImage) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let targetWidth = parseInt(document.getElementById('imgWidth').value) || originalImage.width;
+            let aspectRatio = originalImage.height / originalImage.width;
+            let targetHeight = Math.round(targetWidth * aspectRatio);
+
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+
+            ctx.drawImage(originalImage, 0, 0, targetWidth, targetHeight);
+
+            const quality = document.getElementById('qualityRange').value / 100;
+            const selectedFormat = document.getElementById('formatSelect').value;
+            
+            const processedDataUrl = canvas.toDataURL(selectedFormat, quality);
+
+            const head = `data:${selectedFormat};base64,`;
+            const processedSize = Math.round((processedDataUrl.length - head.length) * 3 / 4);
+
+            const origKB = (originalSize / 1024).toFixed(1);
+            const compKB = (processedSize / 1024).toFixed(1);
+
+            let ext = selectedFormat.split('/')[1];
+            if (ext === 'jpeg') ext = 'jpg';
+
+            document.getElementById('statsText').innerText = `Original: ${origKB} KB -> New: ${compKB} KB (${ext.toUpperCase()})`;
+            
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.href = processedDataUrl;
+            downloadBtn.download = `nexiforge-optimized.${ext}`;
+            
+            document.getElementById('resultBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
